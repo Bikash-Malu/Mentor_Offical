@@ -1,0 +1,116 @@
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@WebServlet("/SaveDoubtServlet")
+public class SaveDoubtServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Retrieve data from the form
+        String studentName = request.getParameter("studentName");
+        String doubtDescription = request.getParameter("doubtDescription");
+
+        // Generate a doubt ID
+        String doubtId = generateDoubtId();
+
+        // Save data to the database
+        saveDoubtToDatabase(doubtId, studentName, doubtDescription);
+
+        // Respond to the client
+        PrintWriter out = response.getWriter();
+        out.println("Doubt saved successfully with ID: " + doubtId);
+    }
+
+    private String generateDoubtId() {
+        // Retrieve the last doubt ID from the database and increment it
+        String lastDoubtId = getLastDoubtIdFromDatabase();
+
+        if (lastDoubtId == null) {
+            // No doubts in the database yet, start with D001
+            return "D001";
+        } else {
+            // Extract the numeric part, increment it, and format it back
+            int numericPart = Integer.parseInt(lastDoubtId.substring(1));
+            numericPart++;
+            return String.format("D%03d", numericPart);
+        }
+    }
+
+    private String getLastDoubtIdFromDatabase() {
+        // Your database connection details
+        String jdbcUrl = "jdbc:mysql://localhost:3306/yourdatabase";
+        String username = "yourusername";
+        String password = "yourpassword";
+
+        try {
+            // Load the JDBC driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            // Establish a connection to the database
+            Connection connection = DriverManager.getConnection(jdbcUrl, username, password);
+
+            // Prepare the SQL statement to retrieve the last doubt ID
+            String sql = "SELECT doubt_id FROM doubts ORDER BY doubt_id DESC LIMIT 1";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                // Execute the query
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                // Check if there is a result
+                if (resultSet.next()) {
+                    return resultSet.getString("doubt_id");
+                }
+            }
+
+            // Close the connection
+            connection.close();
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    private void saveDoubtToDatabase(String doubtId, String studentName, String doubtDescription) {
+        // Your database connection details
+        String jdbcUrl = "jdbc:mysql://localhost:3306/yourdatabase";
+        String username = "yourusername";
+        String password = "yourpassword";
+
+        try {
+            // Load the JDBC driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            // Establish a connection to the database
+            Connection connection = DriverManager.getConnection(jdbcUrl, username, password);
+
+            // Prepare the SQL statement
+            String sql = "INSERT INTO doubts (doubt_id, student_name, doubt_description) VALUES (?, ?, ?)";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                // Set the values for the prepared statement
+                preparedStatement.setString(1, doubtId);
+                preparedStatement.setString(2, studentName);
+                preparedStatement.setString(3, doubtDescription);
+
+                // Execute the update
+                preparedStatement.executeUpdate();
+            }
+
+            // Close the connection
+            connection.close();
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
