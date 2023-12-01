@@ -119,6 +119,32 @@ public class User {
 	}
 	
 	
+	public User(String name, String email, String role,String dept,Integer regdno) {
+		this.name = name;
+		this.email = email;
+		this.role = role;
+		this.dept = dept;
+		this.regdno=regdno;
+	}
+	
+	public User(String email, String password) {
+		this.email = email;
+		this.password = password;
+	}
+	public User(int id, String name, String email, String gender, String role, String adress, String dept,
+			Integer regdno) {
+		this.id = id;
+		this.name = name;
+		this.email = email;
+		this.gender = gender;
+		this.role = role;
+		this.adress = adress;
+		this.dept = dept;
+		this.regdno = regdno;
+	}
+	
+	
+	
 	
 	
 	
