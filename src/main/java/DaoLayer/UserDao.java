@@ -1,5 +1,7 @@
 package DaoLayer;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import Entity.User;
 public class UserDao {
@@ -63,7 +65,146 @@ public class UserDao {
 		return user;
 	}
 	
+	
+	
+	public Boolean updateUser(User user) {
+		Boolean f=false;
+		try {
+			String query="update student_master set name=?,role=?,dept=?,rollno=? where email=?";
+			PreparedStatement pstm = this.con.prepareStatement(query);
+			pstm.setString(1,user.getName());
+			pstm.setString(2,user.getRole());
+			pstm.setString(3,user.getDept());
+			pstm.setInt(4,user.getRegdno());
+			pstm.setString(5,user.getEmail().trim());
+//			pstm.execute();
+			pstm.execute();
+            f = true;
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return f;
+	}
+	
+	
+	public Boolean updatePass(User user) {
+		Boolean f=false;
+		try {
+			String query="update student_master set password=? where email=?";
+			PreparedStatement pstm = this.con.prepareStatement(query);
+			pstm.setString(1,user.getPassword());
+			pstm.setString(2,user.getEmail().trim());
+			pstm.executeUpdate();
+			f=true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return f;
+		
+	}
+	
+	public List<User> getAllSt(String roll){
+		List<User> st=new ArrayList();
+		try {
+			String query="select * from student_master where role=?";
+			PreparedStatement pstm=con.prepareStatement(query);
+			pstm.setString(1, roll);
+			ResultSet rs=pstm.executeQuery();
+			while(rs.next()) {
+				int id=rs.getInt("slno.");
+				String Name=rs.getString("name");
+				String Email=rs.getString("email");
+				String Branch=rs.getString("dept");
+				String Adress=rs.getString("adress");
+				int rollno=rs.getInt("rollno");
+				String role=rs.getString("role");
+				String Gender=rs.getString("gender");
+				User student=new User(id,Name,Email,Gender,role,Adress,Branch,rollno);
+				
+				st.add(student);
+				
+			}
+//			System.out.print(st);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return st;
+	}
+	
+	public User getUserbyemail(String email) {
+		User user=null;
+		try {
+			String query="select * from student_master where email=?";
+			PreparedStatement pstm=con.prepareStatement(query);
+			pstm.setString(1, email);
+			ResultSet rs=pstm.executeQuery();
+			
+			if(rs.next()) {
+				user=new User();
+				user.setName(rs.getString("name"));
+				user.setEmail(rs.getString("email"));
+				user.setPassword(rs.getString("password"));
+				user.setGender(rs.getString("gender"));
+				user.setDept(rs.getString("dept"));
+				user.setRole(rs.getString("role"));
+				user.setRegdno(rs.getInt("rollno"));
+				user.setProfileimg(rs.getString("profileimg"));
+			}
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
 
+		return user;
+	}
+	
+	
+	
+	public String getLastStudentIdFromDatabase() {
+        try {
+            // Prepare the SQL statement to retrieve the last student ID
+            String sql = "SELECT rollno FROM student_master WHERE role = 'student' ORDER BY rollno DESC LIMIT 1";
+            PreparedStatement preparedStatement = con.prepareStatement(sql);
+                // Execute the query
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                // Check if there is a result
+                if (resultSet.next()) {
+                    return resultSet.getString("rollno");
+                }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+	
+	
+	public String getLastFacultyIdFromDatabase() {
+        try {
+            // Prepare the SQL statement to retrieve the last student ID
+            String sql = "SELECT rollno FROM student_master WHERE role = 'faculty' ORDER BY rollno DESC LIMIT 1";
+            PreparedStatement preparedStatement = con.prepareStatement(sql);
+                // Execute the query
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                // Check if there is a result
+                if (resultSet.next()) {
+                    return resultSet.getString("rollno");
+                }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+	
 }
 
 

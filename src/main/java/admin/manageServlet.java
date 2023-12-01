@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -18,6 +19,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.tomcat.dbcp.dbcp2.PStmtKey;
+
+import DaoLayer.UserDao;
+import Entity.User;
+import Helper.ConnectionHelper;
 
 /**
  * Servlet implementation class manageServlet
@@ -47,27 +52,16 @@ public class manageServlet extends HttpServlet {
 		String user_name=request.getParameter("user_name");
 		String role_name=request.getParameter("role_name");
 		String dept=request.getParameter("dept");
-		String rollno=request.getParameter("rollno");
+		Integer rollno=Integer.parseInt(request.getParameter("rollno"));
 //		int status=1;	
 		
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection conn=DriverManager.getConnection("jdbc:mysql://localhost:3307/mentoringsystem","root","");
-			Statement stmt=conn.createStatement();
-			PreparedStatement pstm=conn.prepareStatement("update student_master set name=?,role=?,dept=?,rollno=? where email=?");
-			pstm.setString(1,user_name);
-			pstm.setString(2,role_name);
-			pstm.setString(3,dept);
-			pstm.setString(4,rollno);
-			pstm.setString(5,user_id.trim());
-			pstm.execute();
-			
-			PrintWriter out=response.getWriter();
-			System.out.print("data inserted successfully");
+		User user=new User(user_name,user_id,role_name,dept,rollno);
+		UserDao dao=new UserDao(ConnectionHelper.getConnection());
+		if(dao.updateUser(user)) {
+//			System.out.print("data inserted successfully");
 			response.sendRedirect("Stlist.jsp");
-			conn.close();
-		}catch(Exception e) {
-			response.getWriter().append(e.toString()).append(request.getContextPath());
+		}else {
+			response.sendRedirect("error_page.jsp?page=Stlist.jsp");
 		}
 	}
 
@@ -110,18 +104,28 @@ public class manageServlet extends HttpServlet {
 				}
 		}
 		if(btn.equals("edit")) {
-			try {
-				String query="select * from student_master where email=?";
-				PreparedStatement pst1=con.prepareStatement(query);
-				pst1.setString(1, user_id);
-				ResultSet rs1=pst1.executeQuery();
-				if(rs1.next()) {
-				response.sendRedirect("Stedit.jsp?user_id="+rs1.getString("email")+"&user_name="+rs1.getString("name")+"&role_name="+rs1.getString("role")+"&dept="+rs1.getString("dept")+"&rollno="+rs1.getString("rollno"));
-				}
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			UserDao dao=new UserDao(ConnectionHelper.getConnection());
+			User us=dao.getUserbyemail(user_id);
+			
+			String user_id1=us.getEmail();
+			String user_name=us.getName();
+			String role_name=us.getRole();
+			String dept=us.getDept();
+			String rollno=String.valueOf(us.getRegdno());
+			
+			response.sendRedirect("Stedit.jsp?user_id="+user_id1+"&user_name="+user_name+"&role_name="+role_name+"&dept="+dept+"&rollno="+rollno);
+//			response.sendRedirect("Stedit.jsp");
+//			try {
+//				String query="select * from student_master where email=?";
+//				PreparedStatement pst1=con.prepareStatement(query);
+//				pst1.setString(1, user_id);
+//				ResultSet rs1=pst1.executeQuery();
+//				if(rs1.next()) {
+//				}
+//			} catch (SQLException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 			
 //			response.sendRedirect("edit.jsp");
 //			out.print("edit the code");
