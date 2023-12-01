@@ -133,6 +133,23 @@ public class DoubtDao {
 		return dt;
 	}
 	
+	public String getLastDoubtIdFromDatabase() {
+		try {
+            // Prepare the SQL statement to retrieve the last doubt ID
+            String sql = "SELECT sl FROM doubt_master ORDER BY sl DESC LIMIT 1";
+            PreparedStatement preparedStatement = con.prepareStatement(sql);
+            // Execute the query
+            ResultSet resultSet = preparedStatement.executeQuery();
+                // Check if there is a result
+                if (resultSet.next()) {
+                    return resultSet.getString("sl");
+                }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+	}
+	
 	
 	
 	
