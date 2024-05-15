@@ -1,4 +1,4 @@
-# Mentor_official
+# Mentor_Official
 
 Mentor_official is a standalone application designed for the education sector. It facilitates communication between mentors and students, providing guidance and support. The application includes features such as mailing system and OTP verification for login.
 
@@ -21,7 +21,7 @@ Mentor_official is a standalone application designed for the education sector. I
 Before running the project, ensure you have the following installed:
 
 - **Java 17**: Make sure you have Java 17 (or later) installed on your machine.
-- **Database**: Set up a database (e.g., MySQL, PostgreSQL) and configure the application to connect to it.
+- **Database**: Set up a database MySQL and configure the application to connect to it.
 
 ## Installation
 
@@ -34,7 +34,7 @@ Before running the project, ensure you have the following installed:
 2. **Navigate to the project directory:**
 
     ```bash
-    cd Mentor_official
+    cd Mentor_Official
     ```
 
 3. **Build the project:**
@@ -57,7 +57,7 @@ Before running the project, ensure you have the following installed:
 
 2. **Access the application:**
 
-    Open a web browser and navigate to `http://localhost:8080` (or the configured port).
+    Open a web browser and navigate to `http://localhost:8080` (or the tomcat port).
 
 ## Features
 
