@@ -9,9 +9,8 @@ public class Studentid {
 		// TODO Auto-generated constructor stub
 	}
 	
-	/*
 	
-	Complete it before : 30 Nov 12 pm
+	// Complete it before : 30 Nov 12 pm
 	
 	private String generateStudentId() {
         // Get the current year
@@ -31,5 +30,4 @@ public class Studentid {
         }
     }
     
-    */
 }
